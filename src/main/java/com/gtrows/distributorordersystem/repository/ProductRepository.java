@@ -1,7 +1,7 @@
-package com.gtrows.distributorordersystem.repository;
+package com.gtrows.DistributorOrderSystem.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
-import com.gtrows.distributorordersystem.model.Product;
+import com.gtrows.DistributorOrderSystem.model.Product;
 
 public interface ProductRepository extends MongoRepository<Product, String> {
 }

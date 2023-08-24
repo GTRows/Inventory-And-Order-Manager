@@ -1,4 +1,4 @@
-package com.gtrows.distributorordersystem.model;
+package com.gtrows.DistributorOrderSystem.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
