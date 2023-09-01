@@ -3,6 +3,7 @@ package com.gtrows.DistributorOrderSystem.controller;
 import com.gtrows.DistributorOrderSystem.model.Distributor;
 import com.gtrows.DistributorOrderSystem.model.Product;
 import com.gtrows.DistributorOrderSystem.service.DistributorService;
+import com.gtrows.DistributorOrderSystem.request.ProductTransferRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,27 +28,6 @@ public class DistributorController extends GenericController<Distributor> {
             return new ResponseEntity<>(saveProduct, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    public static class ProductTransferRequest {
-        private String productId;
-        private int quantity;
-
-        public String getProductId() {
-            return productId;
-        }
-
-        public void setProductId(String productId) {
-            this.productId = productId;
-        }
-
-        public int getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(int quantity) {
-            this.quantity = quantity;
         }
     }
 }
