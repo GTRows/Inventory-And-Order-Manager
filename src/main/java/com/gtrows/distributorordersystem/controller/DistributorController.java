@@ -1,7 +1,7 @@
 package com.gtrows.DistributorOrderSystem.controller;
 
 import com.gtrows.DistributorOrderSystem.model.Distributor;
-import com.gtrows.DistributorOrderSystem.model.Product;
+import com.gtrows.DistributorOrderSystem.enums.TransferType;
 import com.gtrows.DistributorOrderSystem.service.DistributorService;
 import com.gtrows.DistributorOrderSystem.request.ProductTransferRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,19 @@ public class DistributorController extends GenericController<Distributor> {
         this.distributorService = distributorService;
     }
 
-    @PostMapping("/{distributorId}/transfer-from-warehouse")
-    public ResponseEntity<Product> transferProductFromWarehouse(@PathVariable String distributorId, @RequestBody ProductTransferRequest request){
+    @PostMapping("/transfer")
+    public ResponseEntity<Void> transfer(@RequestParam TransferType sourceType, @RequestParam String sourceId, @RequestParam TransferType targetType, @RequestParam String targetId, @RequestBody ProductTransferRequest request) {
+        System.out.println("Transfering product from " + sourceType + " " + sourceId + " to " + targetType + " " + targetId);
         try {
-            Product saveProduct = distributorService.transferProductFromWarehouseToMainDistributor(request.getProductId(), distributorId, request.getQuantity());
-            return new ResponseEntity<>(saveProduct, HttpStatus.CREATED);
+            distributorService.transferProduct(sourceType, sourceId, targetType, targetId, request.getProductId(), request.getQuantity());
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
+
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+
 }
+

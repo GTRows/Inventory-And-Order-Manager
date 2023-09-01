@@ -23,6 +23,7 @@ public class WarehouseController extends GenericController<Warehouse> {
 
     @PostMapping("/{warehouseId}/products")
     public ResponseEntity<Product> addProductToWarehouse(@PathVariable String warehouseId, @RequestBody StoredProduct storedProduct) {
+        // TODO: - Check if product exists
         try {
             Product savedProduct = warehouseService.addProductToWarehouse(storedProduct.getProductId(), warehouseId, storedProduct.getQuantity());
             return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);

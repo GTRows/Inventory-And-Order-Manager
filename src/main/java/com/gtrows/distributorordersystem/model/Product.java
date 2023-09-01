@@ -12,6 +12,7 @@ public class Product {
     private Double price;
     private Integer stockQuantity;
 
+
     // Constructors
     public Product() {
     }

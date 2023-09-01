@@ -3,6 +3,7 @@ package com.gtrows.DistributorOrderSystem.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "warehouses")
@@ -14,6 +15,7 @@ public class Warehouse {
 
     // Constructors
     public Warehouse() {
+        this.storedProducts = new ArrayList<>();
     }
 
     public Warehouse(String address, List<StoredProduct> storedProducts) {
