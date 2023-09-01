@@ -41,20 +41,10 @@ public class WarehouseController extends GenericController<Warehouse> {
         }
     }
 
-    @PutMapping("/{warehouseId}/products/{productId}/reduce")
-    public ResponseEntity<Void> reduceStockInWarehouse(@PathVariable String warehouseId, @PathVariable String productId, @RequestBody int quantityToReduce) {
+    @PutMapping("/{warehouseId}/products/{productId}")
+    public ResponseEntity<Void> updateStockInWarehouse(@PathVariable String warehouseId, @PathVariable String productId, @RequestBody int newQuantity) {
         try {
-            warehouseService.reduceStockInWarehouse(productId, warehouseId, quantityToReduce);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @PutMapping("/{warehouseId}/products/{productId}/increase")
-    public ResponseEntity<Void> increaseStockInWarehouse(@PathVariable String warehouseId, @PathVariable String productId, @RequestBody int quantityToAdd) {
-        try {
-            warehouseService.increaseStockInWarehouse(productId, warehouseId, quantityToAdd);
+            warehouseService.updateStockInWarehouse(warehouseId, productId, newQuantity);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

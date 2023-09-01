@@ -8,11 +8,13 @@ import com.gtrows.DistributorOrderSystem.repository.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class WarehouseService extends GenericService<Warehouse> {
 
     @Autowired
     private ProductRepository productRepository;
+
 
     @Autowired
     public WarehouseService(WarehouseRepository repository) {
@@ -45,36 +47,23 @@ public class WarehouseService extends GenericService<Warehouse> {
         save(warehouse);
     }
 
-    public void reduceStockInWarehouse(String productId, String warehouseId, int quantityToReduce) {
-        Warehouse warehouse = getById(warehouseId).orElseThrow(() -> new IllegalArgumentException("Warehouse not found!"));
+    public void updateStockInWarehouse(String warehouseId, String productId, int newQuantity) {
+        Warehouse warehouse = getById(warehouseId).orElse(null);
 
-        StoredProduct storedProduct = warehouse.getStoredProducts().stream()
-                .filter(sp -> sp.getProductId().equals(productId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Product not found in warehouse!"));
-
-        int newQuantity = storedProduct.getQuantity() - quantityToReduce;
-
-        if (newQuantity <= 0) {
-            warehouse.getStoredProducts().remove(storedProduct);
-        } else {
-            storedProduct.setQuantity(newQuantity);
+        if (warehouse == null) {
+            throw new IllegalArgumentException("Warehouse not found!");
         }
 
-        save(warehouse);
-    }
-
-    public void increaseStockInWarehouse(String productId, String warehouseId, int quantityToAdd) {
-        Warehouse warehouse = getById(warehouseId).orElseThrow(() -> new IllegalArgumentException("Warehouse not found!"));
-
         StoredProduct storedProduct = warehouse.getStoredProducts().stream()
                 .filter(sp -> sp.getProductId().equals(productId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Product not found in warehouse!"));
+                .orElse(null);
 
-        int newQuantity = storedProduct.getQuantity() + quantityToAdd;
+        if (storedProduct == null) {
+            throw new IllegalArgumentException("Product not found in warehouse!");
+        }
+
         storedProduct.setQuantity(newQuantity);
-
         save(warehouse);
     }
 
