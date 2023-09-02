@@ -17,6 +17,8 @@ public class Distributor {
     private String id;
 
     private DistributorType distributorType;
+
+    private String connectedMainDistributorId;
     private String address;
     private List<StoredProduct> productsInStock;  // Using the StoredProduct class to represent products with their quantities in distributor's stock
     private boolean isActive;
@@ -25,14 +27,26 @@ public class Distributor {
     public Distributor() {
     }
 
-    public Distributor(DistributorType distributorType, String address, List<StoredProduct> productsInStock, boolean isActive) {
+
+    public Distributor(String id, DistributorType distributorType, String connectedMainDistributorId, String address, List<StoredProduct> productsInStock, boolean isActive) {
+        this.id = id;
         this.distributorType = distributorType;
+        this.connectedMainDistributorId = connectedMainDistributorId;
         this.address = address;
         this.productsInStock = productsInStock;
         this.isActive = isActive;
     }
 
     // Getters and Setters
+
+    public String getConnectedMainDistributorId() {
+        return connectedMainDistributorId;
+    }
+
+    public void setConnectedMainDistributorId(String connectedMainDistributorId) {
+        this.connectedMainDistributorId = connectedMainDistributorId;
+    }
+
     public String getId() {
         return id;
     }

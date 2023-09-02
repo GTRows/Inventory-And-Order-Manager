@@ -32,6 +32,10 @@ public class DistributorService extends GenericService<Distributor> {
         super(repository);
     }
 
+    public void deleteSubDistributor(String id) {
+        // TODO: - Bayilerin kapatılması durumunda tüm ürün stoğu ana bayiye aktarılacaktır.
+    }
+
     public void transferProduct(TransferType sourceType, String sourceId, TransferType targetType, String targetId, String productId, int quantity) {
         // Product Control
         Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Product not found!"));
