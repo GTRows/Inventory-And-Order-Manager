@@ -21,6 +21,29 @@ public class DistributorController extends GenericController<Distributor> {
         this.distributorService = distributorService;
     }
 
+    @Override
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        Distributor distributor = distributorService.getById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Distributor not found!"));
+        System.out.println(distributor.toString());
+        System.out.println("Deleting distributor with id: " + id);
+        if (distributor.getDistributorType() == Distributor.DistributorType.SUB) {
+            System.out.println("Transfering stock to main distributor");
+            distributorService.transferStockToMainDistributor(id);
+            System.out.println("transfered distributor with id: " + id);
+        }
+        System.out.println("Deleting distributor with id: " + id);
+        try {
+            distributorService.delete(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
     @PostMapping("/transfer")
     public ResponseEntity<Void> transfer(@RequestParam TransferType sourceType, @RequestParam String sourceId, @RequestParam TransferType targetType, @RequestParam String targetId, @RequestBody ProductTransferRequest request) {
         System.out.println("Transfering product from " + sourceType + " " + sourceId + " to " + targetType + " " + targetId);

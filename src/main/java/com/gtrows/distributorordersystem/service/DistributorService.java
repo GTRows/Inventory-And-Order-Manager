@@ -32,9 +32,44 @@ public class DistributorService extends GenericService<Distributor> {
         super(repository);
     }
 
-    public void deleteSubDistributor(String id) {
-        // TODO: - Bayilerin kapatılması durumunda tüm ürün stoğu ana bayiye aktarılacaktır.
+    public void transferStockToMainDistributor(String distributorId) {
+        System.out.println("Transfering stock to main distributor");
+        Distributor distributor = distributorRepository.findById(distributorId)
+                .orElseThrow(() -> new IllegalArgumentException("Distributor not found!"));
+        System.out.println("distributor.toString()");
+        Distributor mainDistributor = distributorRepository.findById(distributor.getConnectedMainDistributorId())
+                .orElseThrow(() -> new IllegalArgumentException("Main Distributor not found!"));
+        System.out.println("mainDistributor.toString()");
+        List<StoredProduct> distributorStock = distributor.getProductsInStock();
+        List<StoredProduct> mainDistributorStock = mainDistributor.getProductsInStock();
+
+
+        System.out.println("Distributor Stock: " + distributorStock.toString());
+        System.out.println("Main Distributor Stock: " + mainDistributorStock.toString());
+
+
+        for (StoredProduct storedProduct : distributorStock) {
+            // Check if main distributor already has this product in stock
+            Optional<StoredProduct> existingProductOpt = mainDistributorStock.stream()
+                    .filter(p -> p.getProductId().equals(storedProduct.getProductId()))
+                    .findFirst();
+
+            if (existingProductOpt.isPresent()) {
+                StoredProduct existingProduct = existingProductOpt.get();
+                existingProduct.setQuantity(existingProduct.getQuantity() + storedProduct.getQuantity());
+            } else {
+                mainDistributorStock.add(storedProduct);
+            }
+        }
+
+        // Clear the stock of the distributor
+        distributor.setProductsInStock(new ArrayList<>());
+
+        distributorRepository.save(distributor);
+        distributorRepository.save(mainDistributor);
+
     }
+
 
     public void transferProduct(TransferType sourceType, String sourceId, TransferType targetType, String targetId, String productId, int quantity) {
         // Product Control
