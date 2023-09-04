@@ -6,16 +6,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Document(collection = "distributors")
-public class Distributor {
+public class Distributor extends BaseEntity {
 
     public enum DistributorType {
         MAIN,
         SUB
     }
-
-    @Id
-    private String id;
-
     private DistributorType distributorType;
 
     private String connectedMainDistributorId;
@@ -41,17 +37,7 @@ public class Distributor {
 
     public void setConnectedMainDistributorId(String connectedMainDistributorId) {
         this.connectedMainDistributorId = connectedMainDistributorId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public DistributorType getDistributorType() {
+    }    public DistributorType getDistributorType() {
         return distributorType;
     }
 

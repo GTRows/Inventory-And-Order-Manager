@@ -6,11 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Document(collection = "customers")
-public class Customer {
-
-    @Id
-    private String id;
-
+public class Customer extends BaseEntity {
     private String name;
     private List<Order> orders;
 
@@ -22,14 +18,6 @@ public class Customer {
         this.id = id;
         this.name = name;
         this.orders = orders;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getName() {

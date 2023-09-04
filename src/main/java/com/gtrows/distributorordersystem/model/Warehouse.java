@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "warehouses")
-public class Warehouse {
-    @Id
-    private String id;
+public class Warehouse extends BaseEntity {
     private List<StoredProduct> storedProducts;
 
     // Constructors
@@ -22,14 +20,6 @@ public class Warehouse {
     }
 
     // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public List<StoredProduct> getStoredProducts() {
         return storedProducts;
     }

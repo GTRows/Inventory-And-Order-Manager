@@ -4,9 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "products")
-public class Product {
-    @Id
-    private String id;
+public class Product extends BaseEntity{
     private String productName;
     private Double price;
 
@@ -20,14 +18,7 @@ public class Product {
         this.price = price;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
+    // Getters and Setters
     public String getProductName() {
         return productName;
     }

@@ -1,7 +1,7 @@
 package com.gtrows.DistributorOrderSystem.model;
 
 
-public class StoredProduct {
+public class StoredProduct extends BaseEntity{
     private String productId;
     private int quantity;
 
