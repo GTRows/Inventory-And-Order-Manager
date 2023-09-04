@@ -1,7 +1,11 @@
 package com.gtrows.DistributorOrderSystem.model;
 
 
+import org.springframework.data.annotation.Id;
+
 public class Order {
+    @Id
+    private String id;
     private String productId;
     private int quantity;
 

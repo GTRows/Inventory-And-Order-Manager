@@ -22,7 +22,7 @@ public class CustomerController extends GenericController<Customer> {
         super(customerService);
     }
 
-    @PostMapping("/order")
+    @PostMapping("/orders")
     public ResponseEntity<Void> order(@RequestBody OrderRequest request){
         customerService.order(request);
         return ResponseEntity.ok().build();

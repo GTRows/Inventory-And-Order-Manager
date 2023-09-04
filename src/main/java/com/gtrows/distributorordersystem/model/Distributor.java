@@ -19,9 +19,7 @@ public class Distributor {
     private DistributorType distributorType;
 
     private String connectedMainDistributorId;
-    private String address;
-    private List<StoredProduct> productsInStock;  // Using the StoredProduct class to represent products with their quantities in distributor's stock
-    private boolean isActive;
+    private List<StoredProduct> productsInStock;
 
     // Constructors
     public Distributor() {
@@ -32,9 +30,7 @@ public class Distributor {
         this.id = id;
         this.distributorType = distributorType;
         this.connectedMainDistributorId = connectedMainDistributorId;
-        this.address = address;
         this.productsInStock = productsInStock;
-        this.isActive = isActive;
     }
 
     // Getters and Setters
@@ -63,13 +59,6 @@ public class Distributor {
         this.distributorType = distributorType;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
 
     public List<StoredProduct> getProductsInStock() {
         return productsInStock;
@@ -79,22 +68,13 @@ public class Distributor {
         this.productsInStock = productsInStock;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
 
     @Override
     public String toString() {
         return "Distributor{" +
                 "id='" + id + '\'' +
                 ", distributorType=" + distributorType +
-                ", address='" + address + '\'' +
                 ", productsInStock=" + productsInStock +
-                ", isActive=" + isActive +
                 '}';
     }
 }

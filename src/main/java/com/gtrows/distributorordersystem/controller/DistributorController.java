@@ -44,7 +44,7 @@ public class DistributorController extends GenericController<Distributor> {
     }
 
 
-    @PostMapping("/transfer")
+    @PostMapping("/transfers")
     public ResponseEntity<Void> transfer(@RequestParam TransferType sourceType, @RequestParam String sourceId, @RequestParam TransferType targetType, @RequestParam String targetId, @RequestBody ProductTransferRequest request) {
         System.out.println("Transfering product from " + sourceType + " " + sourceId + " to " + targetType + " " + targetId);
         try {

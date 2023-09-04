@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class WarehouseService extends GenericService<Warehouse> {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
 
     @Autowired
-    public WarehouseService(WarehouseRepository repository) {
+    public WarehouseService(WarehouseRepository repository, ProductRepository productRepository) {
         super(repository);
+        this.productRepository = productRepository;
     }
 
     public Product addProductToWarehouse(String productId, String warehouseId, int quantity) {

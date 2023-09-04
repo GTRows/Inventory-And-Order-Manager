@@ -18,18 +18,18 @@ import java.util.Optional;
 @Service
 public class DistributorService extends GenericService<Distributor> {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    private final DistributorRepository distributorRepository;
+
+    private final WarehouseRepository warehouseRepository;
 
     @Autowired
-    private DistributorRepository distributorRepository;
-
-    @Autowired
-    private WarehouseRepository warehouseRepository;
-
-    @Autowired
-    public DistributorService(DistributorRepository repository) {
+    public DistributorService(DistributorRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, WarehouseRepository warehouseRepository) {
         super(repository);
+        this.productRepository = productRepository;
+        this.distributorRepository = distributorRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     public void transferStockToMainDistributor(String distributorId) {

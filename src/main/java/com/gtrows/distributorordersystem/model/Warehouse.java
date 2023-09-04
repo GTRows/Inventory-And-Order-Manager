@@ -10,7 +10,6 @@ import java.util.List;
 public class Warehouse {
     @Id
     private String id;
-    private String address;
     private List<StoredProduct> storedProducts;
 
     // Constructors
@@ -19,7 +18,6 @@ public class Warehouse {
     }
 
     public Warehouse(String address, List<StoredProduct> storedProducts) {
-        this.address = address;
         this.storedProducts = storedProducts;
     }
 
@@ -30,14 +28,6 @@ public class Warehouse {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public List<StoredProduct> getStoredProducts() {
@@ -52,7 +42,6 @@ public class Warehouse {
     public String toString() {
         return "Warehouse{" +
                 "id='" + id + '\'' +
-                ", address='" + address + '\'' +
                 ", storedProducts=" + storedProducts +
                 '}';
     }

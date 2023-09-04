@@ -2,16 +2,17 @@ package com.gtrows.DistributorOrderSystem.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.List;
 
+@Document(collection = "customers")
 public class Customer {
 
     @Id
     private String id;
 
-    private String Name;
-//    private String lastName;
-    private List<Order> orders;  // Assuming you have an Order class to represent individual orders
+    private String name;
+    private List<Order> orders;
 
     // Constructors
     public Customer() {
@@ -19,7 +20,7 @@ public class Customer {
 
     public Customer(String id, String name, List<Order> orders) {
         this.id = id;
-        Name = name;
+        this.name = name;
         this.orders = orders;
     }
 
@@ -32,11 +33,11 @@ public class Customer {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public List<Order> getOrders() {

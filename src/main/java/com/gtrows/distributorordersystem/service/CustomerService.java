@@ -15,18 +15,18 @@ import java.util.Optional;
 @Service
 public class CustomerService extends GenericService<Customer> {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    private final DistributorRepository distributorRepository;
+
+    private final CustomerRepository customerRepository;
 
     @Autowired
-    private DistributorRepository distributorRepository;
-
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
-    public CustomerService(CustomerRepository repository) {
+    public CustomerService(CustomerRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, CustomerRepository customerRepository) {
         super(repository);
+        this.productRepository = productRepository;
+        this.distributorRepository = distributorRepository;
+        this.customerRepository = customerRepository;
     }
 
     public void order(OrderRequest request){
