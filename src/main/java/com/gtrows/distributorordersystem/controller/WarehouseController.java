@@ -51,6 +51,4 @@ public class WarehouseController extends GenericController<Warehouse> {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-
 }

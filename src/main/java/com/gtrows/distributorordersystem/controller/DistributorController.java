@@ -56,7 +56,5 @@ public class DistributorController extends GenericController<Distributor> {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
-
 }
 

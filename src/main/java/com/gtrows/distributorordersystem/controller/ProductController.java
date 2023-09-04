@@ -14,7 +14,4 @@ public class ProductController extends GenericController<Product> {
     public ProductController(ProductService productService) {
         super(productService);
     }
-
-    // TODO: - Fix Put and Delete methods
-    // TODO: - Automatic generation of id
 }

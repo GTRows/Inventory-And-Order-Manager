@@ -66,6 +66,4 @@ public class WarehouseService extends GenericService<Warehouse> {
         storedProduct.setQuantity(newQuantity);
         save(warehouse);
     }
-
-
 }
