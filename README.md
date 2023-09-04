@@ -1,58 +1,51 @@
 
 # Distributor Order System
 
-## Açıklama
+This project represents a distributor order system that manages products, stock, and orders between main and sub-distributors.
 
-Distributor Order System, distribütörlerin siparişlerini takip edebilmeleri için oluşturulmuş bir Spring Boot tabanlı mikroservistir.
+## Project Constraints:
 
-## Başlangıç
+- Products can only be initially defined in the warehouse.
+- Only the main distributor can obtain products from the warehouse.
+- Sub-distributors specify the desired product and its quantity in the stock to the main distributor when they want products.
+- Customers can place orders through all distributors.
+- In case of a stock shortage, stock transfers can be made between sub-distributors.
+- If a distributor is closed, all product stock will be transferred to the main distributor.
 
-Bu bölüm, projenin nasıl kurulacağı ve çalıştırılacağı hakkında bilgi içerir.
+## Getting Started
 
-### Önkoşullar
+1. **Prerequisites**: 
 
-- Java 17
-- Docker (isteğe bağlı)
-- MongoDB
+   - Java 17
+   - Docker
+   - MongoDB instance (if not using Docker)
 
-### Kurulum
+2. **Building the Project**:
 
-1. Proje klasörüne gidin:
+   ```bash
+   docker build -t distributorordersystem:latest .
+   ```
 
-```bash
-cd DistributorOrderSystem
-```
+3. **Running the Project**:
 
-2. Uygulamayı derleyin:
+   If you're using Docker, you can simply run:
 
-```bash
-./gradlew build
-```
+   ```bash
+   docker run -p 8080:8080 distributorordersystem:latest
+   ```
 
-3. Uygulamayı çalıştırın:
+   This will start the service on port 8080. You can access the Swagger UI at `http://localhost:8080/swagger-ui/` to interact with the API.
 
-```bash
-java -jar build/libs/<JAR_FILE_NAME>.jar
-```
+4. **Database Connection**:
 
-### Docker ile Çalıştırma (Opsiyonel)
+   The project uses MongoDB. By default, it tries to connect to a MongoDB instance at `localhost:27017`. You can change the connection settings in `src/main/resources/application.properties`.
 
-1. Docker imajını oluşturun:
+5. **API Documentation**:
 
-```bash
-docker build -t distributorordersystem:latest .
-```
+   Once the application is running, you can view the API documentation and test the endpoints via Swagger UI at `http://localhost:8080/swagger-ui.html`.
 
-2. Docker konteynerini çalıştırın:
+6. **Postman Collection**:
 
-```bash
-docker run -p 8080:8080 distributorordersystem:latest
-```
+   A Postman collection is provided in the repository for testing the various endpoints.
 
-## Kullanım
-
-Uygulama başladıktan sonra, web tarayıcınızda veya API test aracınızda aşağıdaki URL'ye giderek servise erişebilirsiniz:
-
-```
-http://localhost:8080
-```
+## Unit Tests (Upcoming)
