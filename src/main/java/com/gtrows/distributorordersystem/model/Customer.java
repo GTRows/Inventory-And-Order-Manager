@@ -3,6 +3,7 @@ package com.gtrows.DistributorOrderSystem.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "customers")
@@ -12,12 +13,13 @@ public class Customer extends BaseEntity {
 
     // Constructors
     public Customer() {
+        this.orders = new ArrayList<>();
     }
 
     public Customer(String id, String name, List<Order> orders) {
         this.id = id;
         this.name = name;
-        this.orders = orders;
+        this.orders = (orders == null) ? new ArrayList<>() : orders;
     }
 
     public String getName() {
@@ -33,7 +35,7 @@ public class Customer extends BaseEntity {
     }
 
     public void setOrders(List<Order> orders) {
-        this.orders = orders;
+        this.orders = (orders == null) ? new ArrayList<>() : orders;
     }
 
 

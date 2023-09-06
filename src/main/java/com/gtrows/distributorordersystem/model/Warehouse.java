@@ -15,7 +15,7 @@ public class Warehouse extends BaseEntity {
         this.storedProducts = new ArrayList<>();
     }
 
-    public Warehouse(String address, List<StoredProduct> storedProducts) {
+    public Warehouse(List<StoredProduct> storedProducts) {
         this.storedProducts = storedProducts;
     }
 
@@ -25,7 +25,7 @@ public class Warehouse extends BaseEntity {
     }
 
     public void setStoredProducts(List<StoredProduct> storedProducts) {
-        this.storedProducts = storedProducts;
+        this.storedProducts = (storedProducts == null) ? new ArrayList<>() : storedProducts;
     }
 
     @Override

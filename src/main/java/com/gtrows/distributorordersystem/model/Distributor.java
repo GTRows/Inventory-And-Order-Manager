@@ -3,6 +3,7 @@ package com.gtrows.DistributorOrderSystem.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "distributors")
@@ -12,13 +13,17 @@ public class Distributor extends BaseEntity {
         MAIN,
         SUB
     }
+
     private DistributorType distributorType;
+
+    // TODO - There should be only one main distributor
 
     private String connectedMainDistributorId;
     private List<StoredProduct> productsInStock;
 
     // Constructors
     public Distributor() {
+        this.productsInStock = new ArrayList<>();
     }
 
 
@@ -26,7 +31,7 @@ public class Distributor extends BaseEntity {
         this.id = id;
         this.distributorType = distributorType;
         this.connectedMainDistributorId = connectedMainDistributorId;
-        this.productsInStock = productsInStock;
+        this.productsInStock = (productsInStock == null) ? new ArrayList<>() : productsInStock;
     }
 
     // Getters and Setters
@@ -37,7 +42,9 @@ public class Distributor extends BaseEntity {
 
     public void setConnectedMainDistributorId(String connectedMainDistributorId) {
         this.connectedMainDistributorId = connectedMainDistributorId;
-    }    public DistributorType getDistributorType() {
+    }
+
+    public DistributorType getDistributorType() {
         return distributorType;
     }
 
@@ -51,7 +58,7 @@ public class Distributor extends BaseEntity {
     }
 
     public void setProductsInStock(List<StoredProduct> productsInStock) {
-        this.productsInStock = productsInStock;
+        this.productsInStock = (productsInStock == null) ? new ArrayList<>() : productsInStock;
     }
 
 
