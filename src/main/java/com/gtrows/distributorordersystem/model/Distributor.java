@@ -1,10 +1,10 @@
 package com.gtrows.DistributorOrderSystem.model;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Document(collection = "distributors")
 public class Distributor extends BaseEntity {
@@ -14,11 +14,8 @@ public class Distributor extends BaseEntity {
         SUB
     }
 
-    private DistributorType distributorType;
+    private String distributorId;
 
-    // TODO - There should be only one main distributor
-
-    private String connectedMainDistributorId;
     private List<StoredProduct> productsInStock;
 
     // Constructors
@@ -26,33 +23,17 @@ public class Distributor extends BaseEntity {
         this.productsInStock = new ArrayList<>();
     }
 
-
-    public Distributor(String id, DistributorType distributorType, String connectedMainDistributorId, String address, List<StoredProduct> productsInStock, boolean isActive) {
-        this.id = id;
-        this.distributorType = distributorType;
-        this.connectedMainDistributorId = connectedMainDistributorId;
+    public Distributor(DistributorType distributorType, List<StoredProduct> productsInStock) {
+        if (distributorType == DistributorType.MAIN) {
+            super.id = "0";
+        } else {
+            // random id
+            super.id = UUID.randomUUID().toString();
+        }
         this.productsInStock = (productsInStock == null) ? new ArrayList<>() : productsInStock;
     }
 
     // Getters and Setters
-
-    public String getConnectedMainDistributorId() {
-        return connectedMainDistributorId;
-    }
-
-    public void setConnectedMainDistributorId(String connectedMainDistributorId) {
-        this.connectedMainDistributorId = connectedMainDistributorId;
-    }
-
-    public DistributorType getDistributorType() {
-        return distributorType;
-    }
-
-    public void setDistributorType(DistributorType distributorType) {
-        this.distributorType = distributorType;
-    }
-
-
     public List<StoredProduct> getProductsInStock() {
         return productsInStock;
     }
@@ -64,10 +45,14 @@ public class Distributor extends BaseEntity {
 
     @Override
     public String toString() {
+        String type = (distributorId.equals("0")) ? "Main" : "Sub";
+        String idField = (type.equals("Main")) ? "Main" : "id";
+
         return "Distributor{" +
-                "id='" + id + '\'' +
-                ", distributorType=" + distributorType +
+                "Type = '" + type + "', " +
+                idField + "='" + id + '\'' +
                 ", productsInStock=" + productsInStock +
                 '}';
     }
+
 }

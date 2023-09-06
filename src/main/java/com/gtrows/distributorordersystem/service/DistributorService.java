@@ -24,28 +24,26 @@ public class DistributorService extends GenericService<Distributor> {
 
     private final WarehouseRepository warehouseRepository;
 
+    private final WarehouseService warehouseService;
+
     @Autowired
-    public DistributorService(DistributorRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, WarehouseRepository warehouseRepository) {
+    public DistributorService(DistributorRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, WarehouseRepository warehouseRepository, WarehouseService warehouseService){
         super(repository);
         this.productRepository = productRepository;
         this.distributorRepository = distributorRepository;
         this.warehouseRepository = warehouseRepository;
+        this.warehouseService = warehouseService;
     }
 
     public void transferStockToMainDistributor(String distributorId) {
-        System.out.println("Transfering stock to main distributor");
         Distributor distributor = distributorRepository.findById(distributorId)
                 .orElseThrow(() -> new IllegalArgumentException("Distributor not found!"));
-        System.out.println("distributor.toString()");
-        Distributor mainDistributor = distributorRepository.findById(distributor.getConnectedMainDistributorId())
+
+        Distributor mainDistributor = distributorRepository.findById("0")
                 .orElseThrow(() -> new IllegalArgumentException("Main Distributor not found!"));
-        System.out.println("mainDistributor.toString()");
+
         List<StoredProduct> distributorStock = distributor.getProductsInStock();
         List<StoredProduct> mainDistributorStock = mainDistributor.getProductsInStock();
-
-
-        System.out.println("Distributor Stock: " + distributorStock.toString());
-        System.out.println("Main Distributor Stock: " + mainDistributorStock.toString());
 
 
         for (StoredProduct storedProduct : distributorStock) {
@@ -63,11 +61,10 @@ public class DistributorService extends GenericService<Distributor> {
         }
 
         // Clear the stock of the distributor
-        distributor.setProductsInStock(new ArrayList<>());
+        distributor.setProductsInStock(null);
 
-        distributorRepository.save(distributor);
+        // distributorRepository.save(distributor);
         distributorRepository.save(mainDistributor);
-
     }
 
 
@@ -75,10 +72,13 @@ public class DistributorService extends GenericService<Distributor> {
         // Product Control
         Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Product not found!"));
 
+
         Distributor sourceDistributor = null;
         Distributor targetDistributor = null;
         Warehouse sourceWarehouse = null;
         Warehouse targetWarehouse = null;
+
+        //TODO: - Sub Distributor can't transfer to Main Distributor and warehouse. Main Distributor can't transfer to warehouse.
 
         // Source Control
         if (sourceType == TransferType.MAIN_DISTRIBUTOR || sourceType == TransferType.SUB_DISTRIBUTOR) {
@@ -107,23 +107,17 @@ public class DistributorService extends GenericService<Distributor> {
 
         // Save both
         if (sourceDistributor != null) {
-            System.out.println(1);
-            distributorRepository.save(sourceDistributor);
+            super.save(sourceDistributor);
         } else {
-            System.out.println(2);
-            warehouseRepository.save(sourceWarehouse);
+            warehouseService.save(sourceWarehouse);
         }
 
         if (targetDistributor != null) {
-            System.out.println(3);
-            System.out.println(targetDistributor.toString());
-            distributorRepository.save(targetDistributor);
+            super.save(targetDistributor);
         } else {
-            System.out.println(4);
-            warehouseRepository.save(targetWarehouse);
+            warehouseService.save(targetWarehouse);
         }
     }
-
 
     private List<StoredProduct> updateProductList(List<StoredProduct> products, String productId, int quantity) {
         if (products == null) {
@@ -132,6 +126,7 @@ public class DistributorService extends GenericService<Distributor> {
         Optional<StoredProduct> existingProductOpt = products.stream()
                 .filter(p -> p.getProductId().equals(productId))
                 .findFirst();
+
         if (existingProductOpt.isPresent()) {
             StoredProduct existingProduct = existingProductOpt.get();
             existingProduct.setQuantity(existingProduct.getQuantity() + quantity);
@@ -162,7 +157,9 @@ public class DistributorService extends GenericService<Distributor> {
 
         Optional<StoredProduct> productOpt = products.stream().filter(p -> p.getProductId().equals(productId)).findFirst();
 
-        if (!productOpt.isPresent()) {
+        // TODO: - Fix this bug
+
+        if (productOpt.isEmpty()) {
             throw new IllegalArgumentException("The specified product is not in stock!");
         }
 

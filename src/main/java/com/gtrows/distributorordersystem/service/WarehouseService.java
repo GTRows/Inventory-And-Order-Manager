@@ -26,10 +26,11 @@ public class WarehouseService extends GenericService<Warehouse> {
 
         Warehouse warehouse = getById(warehouseId).orElseThrow(() -> new IllegalArgumentException("Warehouse not found!"));
 
+        //TODO - Fix this bug
         StoredProduct storedProduct = new StoredProduct(product.getId(), quantity);
         warehouse.getStoredProducts().add(storedProduct);
 
-        save(warehouse);
+        super.save(warehouse);
 
         return product;
     }
@@ -44,7 +45,7 @@ public class WarehouseService extends GenericService<Warehouse> {
 
         warehouse.getStoredProducts().remove(productToRemove);
 
-        save(warehouse);
+        super.save(warehouse);
     }
 
     public void updateStockInWarehouse(String warehouseId, String productId, int newQuantity) {
@@ -64,6 +65,6 @@ public class WarehouseService extends GenericService<Warehouse> {
         }
 
         storedProduct.setQuantity(newQuantity);
-        save(warehouse);
+        super.save(warehouse);
     }
 }

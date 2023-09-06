@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/distributors")
 public class DistributorController extends GenericController<Distributor> {
@@ -26,19 +28,13 @@ public class DistributorController extends GenericController<Distributor> {
     public ResponseEntity<Void> delete(@PathVariable String id) {
         Distributor distributor = distributorService.getById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Distributor not found!"));
-        System.out.println(distributor.toString());
-        System.out.println("Deleting distributor with id: " + id);
-        if (distributor.getDistributorType() == Distributor.DistributorType.SUB) {
-            System.out.println("Transfering stock to main distributor");
+        if (!Objects.equals(distributor.getId(), "0")) {
             distributorService.transferStockToMainDistributor(id);
-            System.out.println("transfered distributor with id: " + id);
         }
-        System.out.println("Deleting distributor with id: " + id);
         try {
             distributorService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -46,13 +42,10 @@ public class DistributorController extends GenericController<Distributor> {
 
     @PostMapping("/transfers")
     public ResponseEntity<Void> transfer(@RequestParam TransferType sourceType, @RequestParam String sourceId, @RequestParam TransferType targetType, @RequestParam String targetId, @RequestBody ProductTransferRequest request) {
-        System.out.println("Transfering product from " + sourceType + " " + sourceId + " to " + targetType + " " + targetId);
         try {
             distributorService.transferProduct(sourceType, sourceId, targetType, targetId, request.getProductId(), request.getQuantity());
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-
-            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

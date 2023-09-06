@@ -21,15 +21,18 @@ public class CustomerService extends GenericService<Customer> {
 
     private final CustomerRepository customerRepository;
 
+    private final DistributorService distributorService;
+
     @Autowired
-    public CustomerService(CustomerRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, CustomerRepository customerRepository) {
+    public CustomerService(DistributorService distributorService, CustomerRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, CustomerRepository customerRepository) {
         super(repository);
         this.productRepository = productRepository;
         this.distributorRepository = distributorRepository;
         this.customerRepository = customerRepository;
+        this.distributorService = distributorService;
     }
 
-    public void order(OrderRequest request){
+    public void order(OrderRequest request) {
         // Product control
         Product product = productRepository.findById(request.getOrder().getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + request.getOrder().getProductId()));
@@ -47,27 +50,27 @@ public class CustomerService extends GenericService<Customer> {
                 .filter(p -> p.getProductId().equals(request.getOrder().getProductId()))
                 .findFirst();
 
-        if(!storedProductOpt.isPresent()){
+        if (storedProductOpt.isEmpty()) {
             throw new IllegalArgumentException("Product is not in stock");
         }
 
         StoredProduct storedProduct = storedProductOpt.get();
-        if(storedProduct.getQuantity() < request.getOrder().getQuantity()){
+        if (storedProduct.getQuantity() < request.getOrder().getQuantity()) {
             throw new IllegalArgumentException("Product is not in stock");
         }
 
         // Order
         storedProduct.setQuantity(storedProduct.getQuantity() - request.getOrder().getQuantity());
 
-        if(customer.getOrders() == null){
+        if (customer.getOrders() == null) {
             customer.setOrders(new ArrayList<>());
         }
-        distributorRepository.save(distributor);
+        distributorService.save(distributor);
 
         Order order = new Order();
         order.setProductId(request.getOrder().getProductId());
         order.setQuantity(request.getOrder().getQuantity());
         customer.getOrders().add(order);
-        customerRepository.save(customer);
+        super.save(customer);
     }
 }
