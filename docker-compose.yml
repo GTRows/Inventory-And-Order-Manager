@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  app:
+    image: gtrows/distributor-order-system:latest
+    ports:
+      - "8080:8080"
+      - "80:80"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    volumes:
+      - /Users/aciro/keystore.p12:/app/keystore.p12
+    command: ["java", "-jar", "/app.jar"]
