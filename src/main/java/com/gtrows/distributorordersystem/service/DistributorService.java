@@ -27,13 +27,26 @@ public class DistributorService extends GenericService<Distributor> {
     private final WarehouseService warehouseService;
 
     @Autowired
-    public DistributorService(DistributorRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, WarehouseRepository warehouseRepository, WarehouseService warehouseService){
+    public DistributorService(DistributorRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, WarehouseRepository warehouseRepository, WarehouseService warehouseService) {
         super(repository);
         this.productRepository = productRepository;
         this.distributorRepository = distributorRepository;
         this.warehouseRepository = warehouseRepository;
         this.warehouseService = warehouseService;
     }
+
+    @Override
+    public Distributor save(Distributor distributor) {
+        if ("0".equals(distributor.getId())) {
+            if (this.getById("0").isEmpty()) {
+                distributor.setId("0");
+            } else {
+                throw new IllegalArgumentException("Main Distributor already exists!");
+            }
+        }
+        return super.save(distributor);
+    }
+
 
     public void transferStockToMainDistributor(String distributorId) {
         Distributor distributor = distributorRepository.findById(distributorId)
@@ -79,6 +92,8 @@ public class DistributorService extends GenericService<Distributor> {
         Warehouse targetWarehouse = null;
 
         //TODO: - Sub Distributor can't transfer to Main Distributor and warehouse. Main Distributor can't transfer to warehouse.
+
+        //TODO: - Create a method for this controls
 
         // Source Control
         if (sourceType == TransferType.MAIN_DISTRIBUTOR || sourceType == TransferType.SUB_DISTRIBUTOR) {
@@ -168,5 +183,39 @@ public class DistributorService extends GenericService<Distributor> {
         }
     }
 
+    private enum OperationType {
+        REMOVE, ADD
+    }
+
+    private Object handleTransfer(TransferType transferType, String id, String productId, int quantity, OperationType operation) {
+        if (transferType == TransferType.MAIN_DISTRIBUTOR || transferType == TransferType.SUB_DISTRIBUTOR) {
+            Distributor distributor = distributorRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(transferType.name() + " Distributor not found!"));
+
+            if (operation == OperationType.REMOVE) {
+                checkProductAvailability(distributor.getProductsInStock(), productId, quantity);
+                distributor.setProductsInStock(removeProductFromList(distributor.getProductsInStock(), productId, quantity));
+            } else {
+                distributor.setProductsInStock(updateProductList(distributor.getProductsInStock(), productId, quantity));
+            }
+
+            return distributor;
+        } else if (transferType == TransferType.WAREHOUSE) {
+            Warehouse warehouse = warehouseRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(transferType.name() + " Warehouse not found!"));
+
+            if (operation == OperationType.REMOVE) {
+                checkProductAvailability(warehouse.getStoredProducts(), productId, quantity);
+                warehouse.setStoredProducts(removeProductFromList(warehouse.getStoredProducts(), productId, quantity));
+            } else {
+                warehouse.setStoredProducts(updateProductList(warehouse.getStoredProducts(), productId, quantity));
+            }
+
+            return warehouse;
+        } else {
+            throw new IllegalArgumentException("Transfer Type not found!");
+        }
+    }
+
 
 }
+
+

@@ -7,17 +7,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "warehouses")
-public class Warehouse extends BaseEntity {
+public class Warehouse {
+    private static Warehouse instance;
     private List<StoredProduct> storedProducts;
 
+
     // Constructors
-    public Warehouse() {
+    private Warehouse() {
         this.storedProducts = new ArrayList<>();
     }
 
-    public Warehouse(List<StoredProduct> storedProducts) {
-        this.storedProducts = storedProducts;
+    public static Warehouse getInstance() {
+        if (instance == null) {
+            instance = new Warehouse();
+        }
+        return instance;
     }
+
 
     // Getters and Setters
     public List<StoredProduct> getStoredProducts() {
@@ -26,13 +32,5 @@ public class Warehouse extends BaseEntity {
 
     public void setStoredProducts(List<StoredProduct> storedProducts) {
         this.storedProducts = (storedProducts == null) ? new ArrayList<>() : storedProducts;
-    }
-
-    @Override
-    public String toString() {
-        return "Warehouse{" +
-                "id='" + id + '\'' +
-                ", storedProducts=" + storedProducts +
-                '}';
     }
 }

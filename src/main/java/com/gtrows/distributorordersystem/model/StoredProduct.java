@@ -39,3 +39,4 @@ public class StoredProduct extends BaseEntity{
                 '}';
     }
 }
+

@@ -24,6 +24,16 @@ public class DistributorController extends GenericController<Distributor> {
     }
 
     @Override
+    @PostMapping
+    public Distributor create(@RequestBody Distributor distributor) {
+        try {
+            return distributorService.save(distributor);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Distributor not found!");
+        }
+    }
+
+    @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         Distributor distributor = distributorService.getById(id)
