@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Customer Api", description = "For Customer Operations")
 public class CustomerController extends GenericController<Customer> {
 
-    @Autowired
-    private CustomerService customerService;
+
+    private final CustomerService customerService;
 
     @Autowired
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService, CustomerService customerService1) {
         super(customerService);
+        this.customerService = customerService1;
     }
 
     @PostMapping("/orders")
