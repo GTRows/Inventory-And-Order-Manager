@@ -3,13 +3,14 @@ package com.gtrows.DistributorOrderSystem.controller;
 import com.gtrows.DistributorOrderSystem.model.CreateOrderRequest;
 import com.gtrows.DistributorOrderSystem.model.Product;
 import com.gtrows.DistributorOrderSystem.model.StoredProduct;
-import com.gtrows.DistributorOrderSystem.model.Warehouse;
 import com.gtrows.DistributorOrderSystem.service.WarehouseService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Hidden
 @RestController
 @RequestMapping("/api/warehouses")
 public class WarehouseController {

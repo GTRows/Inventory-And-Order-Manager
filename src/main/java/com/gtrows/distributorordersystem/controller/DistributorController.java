@@ -4,6 +4,7 @@ import com.gtrows.DistributorOrderSystem.model.Distributor;
 import com.gtrows.DistributorOrderSystem.enums.TransferType;
 import com.gtrows.DistributorOrderSystem.service.DistributorService;
 import com.gtrows.DistributorOrderSystem.request.ProductTransferRequest;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
+@Hidden
 @RestController
 @RequestMapping("/api/distributors")
 public class DistributorController extends GenericController<Distributor> {
@@ -22,6 +24,7 @@ public class DistributorController extends GenericController<Distributor> {
         super(distributorService);
         this.distributorService = distributorService;
     }
+
 
     @Override
     @PostMapping
