@@ -32,7 +32,7 @@ public class WarehouseController {
         }
     }
 
-    @PostMapping("/products")
+    @PostMapping("/create-products")
     public ResponseEntity<CreateOrderRequest> addProductToWarehouse(@RequestBody CreateOrderRequest createOrderRequest) {
         try {
             CreateOrderRequest savedProduct = warehouseService.createAndProductToWarehouse(createOrderRequest);
