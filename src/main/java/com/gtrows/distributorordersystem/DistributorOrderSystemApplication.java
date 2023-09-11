@@ -59,7 +59,9 @@ public class DistributorOrderSystemApplication {
         storedProducts.add(new StoredProduct(products.get(2).getId(), 30));
 
         distributorRepository.save(new Distributor(Distributor.DistributorType.MAIN, null));
+        distributorRepository.save(new Distributor(Distributor.DistributorType.SUB, null));
         distributorRepository.save(new Distributor(Distributor.DistributorType.SUB, storedProducts));
+
     }
 
     private void initCustomers(CustomerRepository customerRepository) {

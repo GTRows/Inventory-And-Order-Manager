@@ -1,6 +1,7 @@
 package com.gtrows.DistributorOrderSystem.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gtrows.DistributorOrderSystem.Util.ProductUtils;
 import com.gtrows.DistributorOrderSystem.model.*;
 import com.gtrows.DistributorOrderSystem.repository.CustomerRepository;
 import com.gtrows.DistributorOrderSystem.repository.DistributorRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:test-application.properties")
 public class CustomerControllerTest {
 
     @Autowired
@@ -30,8 +33,6 @@ public class CustomerControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-
 
     @Autowired
     private DistributorRepository distributorRepository;
@@ -60,9 +61,8 @@ public class CustomerControllerTest {
     @Test
     public void testGetCustomerById() throws Exception {
         Customer customer = customerRepository.findByName("Customer 1");
-        String customerId = customer.getId();
 
-        mockMvc.perform(get("/api/customers/{id}", customerId))
+        mockMvc.perform(get("/api/customers/{id}", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(customer)));
     }
@@ -90,27 +90,26 @@ public class CustomerControllerTest {
 
     @Test
     public void testDeleteCustomer() throws Exception {
-        mockMvc.perform(delete("/api/customers/{id}", customerRepository.findByName("3").getId()))
+        mockMvc.perform(delete("/api/customers/{id}", "3"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testCreateOrder() throws Exception {
-        // Get customer Id by name == "Customer 1"
         Customer customer = customerRepository.findByName("Customer 1");
         String customerId = customer.getId();
 
-        // Get product Id by name == "P1"
         Product product = productRepository.findByName("P1");
         String productId = product.getId();
 
-        // Get distributor Id randomly withot id == "0"
         Distributor distributor = distributorRepository.findAll().stream()
                 .filter(d -> !d.getId().equals("0"))
                 .findAny()
                 .orElse(null);
+        assert distributor != null;
         String distributorId = distributor.getId();
-        distributorService.updateProductList(new ArrayList<>(), productId, 10);
+
+        ProductUtils.updateProductList(new ArrayList<>(), productId, 10);
         distributorService.save(distributor);
 
 
@@ -123,7 +122,6 @@ public class CustomerControllerTest {
         order.setQuantity(1);
         orderRequest.setOrder(order);
         orderRequest.setDistributorId(distributorId);
-
 
 
         mockMvc.perform(post("/api/customers/orders")

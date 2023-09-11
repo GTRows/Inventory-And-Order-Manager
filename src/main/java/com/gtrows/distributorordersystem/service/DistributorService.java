@@ -1,5 +1,6 @@
 package com.gtrows.DistributorOrderSystem.service;
 
+import com.gtrows.DistributorOrderSystem.Util.ProductUtils;
 import com.gtrows.DistributorOrderSystem.model.Distributor;
 import com.gtrows.DistributorOrderSystem.model.StoredProduct;
 import com.gtrows.DistributorOrderSystem.model.Warehouse;
@@ -111,6 +112,9 @@ public class DistributorService extends GenericService<Distributor> {
         if (transferRequest.getSourceType() == TransferType.MAIN_DISTRIBUTOR && transferRequest.getTargetType() == TransferType.WAREHOUSE) {
             throw new IllegalArgumentException("Main Distributor can't transfer to Warehouse!");
         }
+        if (transferRequest.getSourceType() == TransferType.WAREHOUSE && transferRequest.getTargetType() == TransferType.SUB_DISTRIBUTOR) {
+            throw new IllegalArgumentException("Warehouse can't transfer to Sub Distributor!");
+        }
 
         // Source Control
         if (transferRequest.getSourceType() == TransferType.MAIN_DISTRIBUTOR || transferRequest.getSourceType() == TransferType.SUB_DISTRIBUTOR) {
@@ -118,7 +122,7 @@ public class DistributorService extends GenericService<Distributor> {
             checkProductAvailability(sourceDistributor.getProductsInStock(), transferRequest.getProductId(), transferRequest.getQuantity());
             sourceDistributor.setProductsInStock(removeProductFromList(sourceDistributor.getProductsInStock(), transferRequest.getProductId(), transferRequest.getQuantity()));
         } else if (transferRequest.getSourceType() == TransferType.WAREHOUSE) {
-            sourceWarehouse = warehouseRepository.findById(transferRequest.getSourceId()).orElseThrow(() -> new IllegalArgumentException("Source Warehouse not found!"));
+            sourceWarehouse = Warehouse.getInstance();
             checkProductAvailability(sourceWarehouse.getStoredProducts(), transferRequest.getProductId(), transferRequest.getQuantity());
             sourceWarehouse.setStoredProducts(removeProductFromList(sourceWarehouse.getStoredProducts(), transferRequest.getProductId(), transferRequest.getQuantity()));
         } else {
@@ -128,14 +132,13 @@ public class DistributorService extends GenericService<Distributor> {
         // Target Control
         if (transferRequest.getTargetType() == TransferType.MAIN_DISTRIBUTOR || transferRequest.getTargetType() == TransferType.SUB_DISTRIBUTOR) {
             targetDistributor = distributorRepository.findById(transferRequest.getTargetId()).orElseThrow(() -> new IllegalArgumentException("Target Distributor not found!"));
-            targetDistributor.setProductsInStock(updateProductList(targetDistributor.getProductsInStock(), transferRequest.getProductId(), transferRequest.getQuantity()));
+            targetDistributor.setProductsInStock(ProductUtils.updateProductList(targetDistributor.getProductsInStock(), transferRequest.getProductId(), transferRequest.getQuantity()));
         } else if (transferRequest.getTargetType() == TransferType.WAREHOUSE) {
-            targetWarehouse = warehouseRepository.findById(transferRequest.getTargetId()).orElseThrow(() -> new IllegalArgumentException("Target Warehouse not found!"));
-            targetWarehouse.setStoredProducts(updateProductList(targetWarehouse.getStoredProducts(), transferRequest.getProductId(), transferRequest.getQuantity()));
+            targetWarehouse = Warehouse.getInstance();
+            targetWarehouse.setStoredProducts(ProductUtils.updateProductList(targetWarehouse.getStoredProducts(), transferRequest.getProductId(), transferRequest.getQuantity()));
         } else {
             throw new IllegalArgumentException("Target Type not found!");
         }
-
         // Save both
         if (sourceDistributor != null) {
             super.save(sourceDistributor);
@@ -149,21 +152,6 @@ public class DistributorService extends GenericService<Distributor> {
             warehouseService.save(targetWarehouse);
         }
     }
-
-    public List<StoredProduct> updateProductList(List<StoredProduct> products, String productId, int quantity) {
-        Optional<StoredProduct> existingProductOpt = products.stream()
-                .filter(p -> p.getProductId().equals(productId))
-                .findFirst();
-
-        if (existingProductOpt.isPresent()) {
-            StoredProduct existingProduct = existingProductOpt.get();
-            existingProduct.setQuantity(existingProduct.getQuantity() + quantity);
-        } else {
-            products.add(new StoredProduct(productId, quantity));
-        }
-        return products;
-    }
-
 
     private List<StoredProduct> removeProductFromList(List<StoredProduct> products, String productId, int quantity) {
         Optional<StoredProduct> existingProduct = products.stream().filter(p -> p.getProductId().equals(productId)).findFirst();
@@ -193,40 +181,6 @@ public class DistributorService extends GenericService<Distributor> {
             throw new IllegalArgumentException("There is not enough of the specified product!");
         }
     }
-
-    private enum OperationType {
-        REMOVE, ADD
-    }
-
-    private Object handleTransfer(TransferType transferType, String id, String productId, int quantity, OperationType operation) {
-        if (transferType == TransferType.MAIN_DISTRIBUTOR || transferType == TransferType.SUB_DISTRIBUTOR) {
-            Distributor distributor = distributorRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(transferType.name() + " Distributor not found!"));
-
-            if (operation == OperationType.REMOVE) {
-                checkProductAvailability(distributor.getProductsInStock(), productId, quantity);
-                distributor.setProductsInStock(removeProductFromList(distributor.getProductsInStock(), productId, quantity));
-            } else {
-                distributor.setProductsInStock(updateProductList(distributor.getProductsInStock(), productId, quantity));
-            }
-
-            return distributor;
-        } else if (transferType == TransferType.WAREHOUSE) {
-            Warehouse warehouse = warehouseRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(transferType.name() + " Warehouse not found!"));
-
-            if (operation == OperationType.REMOVE) {
-                checkProductAvailability(warehouse.getStoredProducts(), productId, quantity);
-                warehouse.setStoredProducts(removeProductFromList(warehouse.getStoredProducts(), productId, quantity));
-            } else {
-                warehouse.setStoredProducts(updateProductList(warehouse.getStoredProducts(), productId, quantity));
-            }
-
-            return warehouse;
-        } else {
-            throw new IllegalArgumentException("Transfer Type not found!");
-        }
-    }
-
-
 }
 
 

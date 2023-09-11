@@ -24,12 +24,8 @@ public class DistributorController extends GenericController<Distributor> {
 
     @PostMapping("/transfers")
     public ResponseEntity<Void> transfer(@RequestBody TransferRequest request) {
-        try {
-            distributorService.transferProduct(request);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        distributorService.transferProduct(request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

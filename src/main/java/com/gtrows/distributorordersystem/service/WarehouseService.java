@@ -1,5 +1,6 @@
 package com.gtrows.DistributorOrderSystem.service;
 
+import com.gtrows.DistributorOrderSystem.Util.ProductUtils;
 import com.gtrows.DistributorOrderSystem.model.CreateOrderRequest;
 import com.gtrows.DistributorOrderSystem.model.Warehouse;
 import com.gtrows.DistributorOrderSystem.model.StoredProduct;
@@ -9,6 +10,8 @@ import com.gtrows.DistributorOrderSystem.repository.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 
 @Service
@@ -29,23 +32,22 @@ public class WarehouseService {
         Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Product not found!"));
 
         Warehouse warehouse = Warehouse.getInstance();
-
-        StoredProduct storedProduct = new StoredProduct(product.getId(), quantity);
-        warehouse.getStoredProducts().add(storedProduct);
-
-        this.save(warehouse);
+        warehouse.setStoredProducts(ProductUtils.updateProductList(warehouse.getStoredProducts(), productId, quantity));
+        warehouseRepository.save(warehouse);
 
         return product;
     }
 
-    public CreateOrderRequest createAndProductToWarehouse(CreateOrderRequest createOrderRequest) {
-        // Control if the product is already in the warehouse
-        if (!Warehouse.getInstance().getStoredProducts().stream().anyMatch(storedProduct -> storedProduct.getProductId().equals(createOrderRequest.getProduct().getId()))) {
-            createOrderRequest.getStoredProduct().setProductId(createOrderRequest.getProduct().getId());
+    public void createAndProductToWarehouse(CreateOrderRequest createOrderRequest) {
+        Product product = createOrderRequest.getProduct();
+
+        Optional<Product> existingProduct = productRepository.findById(product.getId());
+
+        if (existingProduct.isEmpty()) {
+            productRepository.save(product);
         }
-        // Add the product to the warehouse
-        addProductToWarehouse(createOrderRequest.getProduct().getId(), createOrderRequest.getStoredProduct().getQuantity());
-        return createOrderRequest;
+
+        addProductToWarehouse(product.getId(), createOrderRequest.getStoredProduct().getQuantity());
     }
 
     public void removeProductFromWarehouse(String productId) {

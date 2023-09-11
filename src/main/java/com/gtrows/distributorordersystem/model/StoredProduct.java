@@ -9,7 +9,16 @@ import lombok.AllArgsConstructor;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoredProduct extends BaseEntity {
+public class StoredProduct extends BaseEntity implements Cloneable {
     private String productId;
     private int quantity;
+
+    @Override
+    public StoredProduct clone() {
+        try {
+            return (StoredProduct) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("The StoredProduct class does not support cloning", e);
+        }
+    }
 }

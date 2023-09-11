@@ -46,24 +46,42 @@ public class TestConfig {
     }
 
     private void initProducts(ProductRepository productRepository) {
-        productRepository.save(new Product("P1", 10.0));
-        productRepository.save(new Product("P2", 20.0));
-        productRepository.save(new Product("P3", 30.0));
+        Product product1 = new Product("P1", 10.0);
+        product1.setId("1");
+        productRepository.save(product1);
+
+        Product product2 = new Product("P2", 20.0);
+        product2.setId("2");
+        productRepository.save(product2);
+
+        Product product3 = new Product("P3", 30.0);
+        product3.setId("3");
+        productRepository.save(product3);
     }
 
-    private void initWarehouse(WarehouseRepository warehouseRepository) {
+    public void initWarehouse(WarehouseRepository warehouseRepository) {
         warehouseRepository.save(Warehouse.getInstance());
     }
 
-    private void initDistributors(DistributorRepository distributorRepository) {
+    public void initDistributors(DistributorRepository distributorRepository) {
         ArrayList<StoredProduct> storedProducts = new ArrayList<>();
         ArrayList<Product> products = (ArrayList<Product>) productRepository.findAll();
         storedProducts.add(new StoredProduct(products.get(0).getId(), 10));
         storedProducts.add(new StoredProduct(products.get(1).getId(), 20));
         storedProducts.add(new StoredProduct(products.get(2).getId(), 30));
 
-        distributorRepository.save(new Distributor(Distributor.DistributorType.MAIN, null));
-        distributorRepository.save(new Distributor(Distributor.DistributorType.SUB, storedProducts));
+        Warehouse.getInstance().setStoredProducts(storedProducts);
+        warehouseRepository.save(Warehouse.getInstance());
+
+        distributorRepository.save(new Distributor(Distributor.DistributorType.MAIN, storedProducts));
+
+        Distributor subDistributor = new Distributor(Distributor.DistributorType.SUB, storedProducts);
+        subDistributor.setId("1");
+        distributorRepository.save(subDistributor);
+
+        Distributor subDistributor2 = new Distributor(Distributor.DistributorType.SUB, null);
+        subDistributor2.setId("2");
+        distributorRepository.save(subDistributor2);
     }
 
     private void initCustomers(CustomerRepository customerRepository) {
@@ -71,8 +89,16 @@ public class TestConfig {
         orders.add(new Order("P1", 10));
         orders.add(new Order("P2", 20));
 
-        customerRepository.save(new Customer("Customer 1", null));
-        customerRepository.save(new Customer("2", null));
-        customerRepository.save(new Customer("3", orders));
+        Customer customer1 = new Customer("Customer 1", null);
+        customer1.setId("1");
+        customerRepository.save(customer1);
+
+        Customer customer2 = new Customer("2", null);
+        customer2.setId("2");
+        customerRepository.save(customer2);
+
+        Customer customer3 = new Customer("3", orders);
+        customer3.setId("3");
+        customerRepository.save(customer3);
     }
 }
