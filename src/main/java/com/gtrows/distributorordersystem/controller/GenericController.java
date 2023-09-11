@@ -24,7 +24,6 @@ public abstract class GenericController<T extends BaseEntity> {
     @GetMapping("/{id}")
     public ResponseEntity<T> getById(@PathVariable String id) {
         Optional<T> entityOptional = service.getById(id);
-
         return entityOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

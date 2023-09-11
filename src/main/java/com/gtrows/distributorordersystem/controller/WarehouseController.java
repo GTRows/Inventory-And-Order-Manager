@@ -36,7 +36,7 @@ public class WarehouseController {
     @PostMapping("/create-products")
     public ResponseEntity<CreateOrderRequest> addProductToWarehouse(@RequestBody CreateOrderRequest createOrderRequest) {
         try {
-            CreateOrderRequest savedProduct = warehouseService.createAndProductToWarehouse(createOrderRequest);
+            warehouseService.createAndProductToWarehouse(createOrderRequest);
             return new ResponseEntity<>(createOrderRequest, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

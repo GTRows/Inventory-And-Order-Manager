@@ -1,9 +1,7 @@
 package com.gtrows.DistributorOrderSystem;
 
-import com.gtrows.DistributorOrderSystem.model.Distributor;
-import com.gtrows.DistributorOrderSystem.model.Product;
-import com.gtrows.DistributorOrderSystem.model.StoredProduct;
-import com.gtrows.DistributorOrderSystem.model.Warehouse;
+import com.gtrows.DistributorOrderSystem.model.*;
+import com.gtrows.DistributorOrderSystem.repository.CustomerRepository;
 import com.gtrows.DistributorOrderSystem.repository.DistributorRepository;
 import com.gtrows.DistributorOrderSystem.repository.ProductRepository;
 import com.gtrows.DistributorOrderSystem.repository.WarehouseRepository;
@@ -21,39 +19,54 @@ public class DistributorOrderSystemApplication {
         SpringApplication.run(DistributorOrderSystemApplication.class, args);
     }
 
+    private boolean isDatabaseEmpty(ProductRepository productRepository, WarehouseRepository warehouseRepository,
+                                    DistributorRepository distributorRepository, CustomerRepository customerRepository) {
+        return productRepository.count() == 0 &&
+                warehouseRepository.count() == 0 &&
+                distributorRepository.count() == 0 &&
+                customerRepository.count() == 0;
+    }
+
     @Bean
-    public CommandLineRunner initDatabase(ProductRepository productRepository) {
+    public CommandLineRunner initData(ProductRepository productRepository, WarehouseRepository warehouseRepository,
+                                      DistributorRepository distributorRepository, CustomerRepository customerRepository) {
         return args -> {
-            if (productRepository.count() == 0) {
-                productRepository.save(new Product("P1", 10.0));
-                productRepository.save(new Product("P2", 20.0));
-                productRepository.save(new Product("P3", 30.0));
+            if (isDatabaseEmpty(productRepository, warehouseRepository, distributorRepository, customerRepository)) {
+                initProducts(productRepository);
+                initWarehouse(warehouseRepository);
+                initDistributors(distributorRepository);
+                initCustomers(customerRepository);
             }
         };
     }
 
-    @Bean
-    public CommandLineRunner initWarehouse(WarehouseRepository warehouseRepository) {
-        return args -> {
-            if (warehouseRepository.count() == 0) {
-                warehouseRepository.save(Warehouse.getInstance());
-            }
-        };
+    private void initProducts(ProductRepository productRepository) {
+        productRepository.save(new Product("P1", 10.0));
+        productRepository.save(new Product("P2", 20.0));
+        productRepository.save(new Product("P3", 30.0));
     }
 
-    @Bean
-    public CommandLineRunner initDistributor(DistributorRepository distributorRepository) {
+    private void initWarehouse(WarehouseRepository warehouseRepository) {
+        warehouseRepository.save(Warehouse.getInstance());
+    }
+
+    private void initDistributors(DistributorRepository distributorRepository) {
         ArrayList<StoredProduct> storedProducts = new ArrayList<>();
         storedProducts.add(new StoredProduct("P1", 10));
         storedProducts.add(new StoredProduct("P2", 20));
         storedProducts.add(new StoredProduct("P3", 30));
 
-        return args -> {
-            if (distributorRepository.count() == 0) {
-                distributorRepository.save(new Distributor(Distributor.DistributorType.MAIN, null));
-                distributorRepository.save(new Distributor(Distributor.DistributorType.SUB, storedProducts));
-            }
-        };
+        distributorRepository.save(new Distributor(Distributor.DistributorType.MAIN, null));
+        distributorRepository.save(new Distributor(Distributor.DistributorType.SUB, storedProducts));
     }
 
+    private void initCustomers(CustomerRepository customerRepository) {
+        ArrayList<Order> orders = new ArrayList<>();
+        orders.add(new Order("P1", 10));
+        orders.add(new Order("P2", 20));
+
+        customerRepository.save(new Customer("Customer 1", null));
+        customerRepository.save(new Customer("2", null));
+        customerRepository.save(new Customer("3", orders));
+    }
 }
