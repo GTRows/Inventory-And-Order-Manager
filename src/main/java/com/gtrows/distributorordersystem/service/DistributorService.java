@@ -85,15 +85,18 @@ public class DistributorService extends GenericService<Distributor> {
         // Product Control
         Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Product not found!"));
 
-
         Distributor sourceDistributor = null;
         Distributor targetDistributor = null;
         Warehouse sourceWarehouse = null;
         Warehouse targetWarehouse = null;
 
-        //TODO: - Sub Distributor can't transfer to Main Distributor and warehouse. Main Distributor can't transfer to warehouse.
-
-        //TODO: - Create a method for this controls
+        // Check forbidden transfers
+        if (sourceType == TransferType.SUB_DISTRIBUTOR && (targetType == TransferType.MAIN_DISTRIBUTOR || targetType == TransferType.WAREHOUSE)) {
+            throw new IllegalArgumentException("Sub Distributor can't transfer to Main Distributor or Warehouse!");
+        }
+        if (sourceType == TransferType.MAIN_DISTRIBUTOR && targetType == TransferType.WAREHOUSE) {
+            throw new IllegalArgumentException("Main Distributor can't transfer to Warehouse!");
+        }
 
         // Source Control
         if (sourceType == TransferType.MAIN_DISTRIBUTOR || sourceType == TransferType.SUB_DISTRIBUTOR) {
@@ -107,7 +110,6 @@ public class DistributorService extends GenericService<Distributor> {
         } else {
             throw new IllegalArgumentException("Source Type not found!");
         }
-
 
         // Target Control
         if (targetType == TransferType.MAIN_DISTRIBUTOR || targetType == TransferType.SUB_DISTRIBUTOR) {
