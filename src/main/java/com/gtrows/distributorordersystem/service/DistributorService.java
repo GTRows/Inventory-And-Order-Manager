@@ -1,7 +1,6 @@
 package com.gtrows.DistributorOrderSystem.service;
 
 import com.gtrows.DistributorOrderSystem.model.Distributor;
-import com.gtrows.DistributorOrderSystem.model.Product;
 import com.gtrows.DistributorOrderSystem.model.StoredProduct;
 import com.gtrows.DistributorOrderSystem.model.Warehouse;
 import com.gtrows.DistributorOrderSystem.enums.TransferType;
@@ -27,10 +26,10 @@ public class DistributorService extends GenericService<Distributor> {
     private final WarehouseService warehouseService;
 
     @Autowired
-    public DistributorService(DistributorRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, WarehouseRepository warehouseRepository, WarehouseService warehouseService) {
+    public DistributorService(DistributorRepository repository, ProductRepository productRepository, WarehouseRepository warehouseRepository, WarehouseService warehouseService) {
         super(repository);
         this.productRepository = productRepository;
-        this.distributorRepository = distributorRepository;
+        this.distributorRepository = repository;
         this.warehouseRepository = warehouseRepository;
         this.warehouseService = warehouseService;
     }
@@ -83,7 +82,7 @@ public class DistributorService extends GenericService<Distributor> {
 
     public void transferProduct(TransferType sourceType, String sourceId, TransferType targetType, String targetId, String productId, int quantity) {
         // Product Control
-        Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Product not found!"));
+        productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Product not found!"));
 
         Distributor sourceDistributor = null;
         Distributor targetDistributor = null;
@@ -173,8 +172,6 @@ public class DistributorService extends GenericService<Distributor> {
         }
 
         Optional<StoredProduct> productOpt = products.stream().filter(p -> p.getProductId().equals(productId)).findFirst();
-
-        // TODO: - Fix this bug
 
         if (productOpt.isEmpty()) {
             throw new IllegalArgumentException("The specified product is not in stock!");
