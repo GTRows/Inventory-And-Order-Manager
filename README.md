@@ -34,7 +34,7 @@ This project represents a distributor order system that manages products, stock,
    docker run -p 8080:8080 distributorordersystem:latest
    ```
 
-   This will start the service on port 8080. You can access the Swagger UI at `http://localhost:8080/swagger-ui/` to interact with the API.
+   This will start the service on port 8080. You can access the Swagger UI at `http://localhost:8080/swagger-ui.html/` to interact with the API.
 
 4. **Database Connection**:
 

@@ -1,5 +1,7 @@
 package com.gtrows.DistributorOrderSystem.service;
 
+import com.gtrows.DistributorOrderSystem.Util.ProductUtils;
+import com.gtrows.DistributorOrderSystem.model.CreateOrderRequest;
 import com.gtrows.DistributorOrderSystem.model.Warehouse;
 import com.gtrows.DistributorOrderSystem.model.StoredProduct;
 import com.gtrows.DistributorOrderSystem.model.Product;
@@ -7,35 +9,49 @@ import com.gtrows.DistributorOrderSystem.repository.ProductRepository;
 import com.gtrows.DistributorOrderSystem.repository.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 
 @Service
-public class WarehouseService extends GenericService<Warehouse> {
+public class WarehouseService {
 
     private final ProductRepository productRepository;
+
+    private final WarehouseRepository warehouseRepository;
 
 
     @Autowired
     public WarehouseService(WarehouseRepository repository, ProductRepository productRepository) {
-        super(repository);
+        this.warehouseRepository = repository;
         this.productRepository = productRepository;
     }
 
-    public Product addProductToWarehouse(String productId, String warehouseId, int quantity) {
+    public Product addProductToWarehouse(String productId, int quantity) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("Product not found!"));
 
-        Warehouse warehouse = getById(warehouseId).orElseThrow(() -> new IllegalArgumentException("Warehouse not found!"));
-
-        StoredProduct storedProduct = new StoredProduct(product.getId(), quantity);
-        warehouse.getStoredProducts().add(storedProduct);
-
-        save(warehouse);
+        Warehouse warehouse = Warehouse.getInstance();
+        warehouse.setStoredProducts(ProductUtils.updateProductList(warehouse.getStoredProducts(), productId, quantity));
+        warehouseRepository.save(warehouse);
 
         return product;
     }
 
-    public void removeProductFromWarehouse(String productId, String warehouseId) {
-        Warehouse warehouse = getById(warehouseId).orElseThrow(() -> new IllegalArgumentException("Warehouse not found!"));
+    public void createAndProductToWarehouse(CreateOrderRequest createOrderRequest) {
+        Product product = createOrderRequest.getProduct();
+
+        Optional<Product> existingProduct = productRepository.findById(product.getId());
+
+        if (existingProduct.isEmpty()) {
+            productRepository.save(product);
+        }
+
+        addProductToWarehouse(product.getId(), createOrderRequest.getStoredProduct().getQuantity());
+    }
+
+    public void removeProductFromWarehouse(String productId) {
+        Warehouse warehouse = Warehouse.getInstance();
 
         StoredProduct productToRemove = warehouse.getStoredProducts().stream()
                 .filter(storedProduct -> storedProduct.getProductId().equals(productId))
@@ -44,15 +60,11 @@ public class WarehouseService extends GenericService<Warehouse> {
 
         warehouse.getStoredProducts().remove(productToRemove);
 
-        save(warehouse);
+        this.save(warehouse);
     }
 
-    public void updateStockInWarehouse(String warehouseId, String productId, int newQuantity) {
-        Warehouse warehouse = getById(warehouseId).orElse(null);
-
-        if (warehouse == null) {
-            throw new IllegalArgumentException("Warehouse not found!");
-        }
+    public void updateStockInWarehouse(String productId, int newQuantity) {
+        Warehouse warehouse = Warehouse.getInstance();
 
         StoredProduct storedProduct = warehouse.getStoredProducts().stream()
                 .filter(sp -> sp.getProductId().equals(productId))
@@ -64,8 +76,11 @@ public class WarehouseService extends GenericService<Warehouse> {
         }
 
         storedProduct.setQuantity(newQuantity);
-        save(warehouse);
+        this.save(warehouse);
     }
 
-
+    @Transactional
+    public void save(Warehouse entity) {
+        warehouseRepository.save(entity);
+    }
 }

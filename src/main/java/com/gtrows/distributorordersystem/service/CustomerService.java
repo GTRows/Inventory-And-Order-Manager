@@ -1,14 +1,19 @@
 package com.gtrows.DistributorOrderSystem.service;
 
+import com.gtrows.DistributorOrderSystem.enums.TransferType;
 import com.gtrows.DistributorOrderSystem.model.*;
 import com.gtrows.DistributorOrderSystem.repository.CustomerRepository;
 import com.gtrows.DistributorOrderSystem.repository.DistributorRepository;
+import com.gtrows.DistributorOrderSystem.repository.WarehouseRepository;
 import com.gtrows.DistributorOrderSystem.request.OrderRequest;
 import com.gtrows.DistributorOrderSystem.repository.ProductRepository;
+import com.gtrows.DistributorOrderSystem.request.TransferRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -21,17 +26,23 @@ public class CustomerService extends GenericService<Customer> {
 
     private final CustomerRepository customerRepository;
 
+    private final DistributorService distributorService;
+
+    private final WarehouseRepository warehouseRepository;
+
     @Autowired
-    public CustomerService(CustomerRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, CustomerRepository customerRepository) {
+    public CustomerService(DistributorService distributorService, CustomerRepository repository, ProductRepository productRepository, DistributorRepository distributorRepository, CustomerRepository customerRepository, WarehouseRepository warehouseRepository) {
         super(repository);
+        this.warehouseRepository = warehouseRepository;
         this.productRepository = productRepository;
         this.distributorRepository = distributorRepository;
         this.customerRepository = customerRepository;
+        this.distributorService = distributorService;
     }
 
-    public void order(OrderRequest request){
+    public void order(OrderRequest request) {
         // Product control
-        Product product = productRepository.findById(request.getOrder().getProductId())
+        productRepository.findById(request.getOrder().getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + request.getOrder().getProductId()));
 
         // Distributor control
@@ -47,27 +58,59 @@ public class CustomerService extends GenericService<Customer> {
                 .filter(p -> p.getProductId().equals(request.getOrder().getProductId()))
                 .findFirst();
 
-        if(!storedProductOpt.isPresent()){
-            throw new IllegalArgumentException("Product is not in stock");
+        // Check if the product is in stock or not
+        if (storedProductOpt.isEmpty() || storedProductOpt.get().getQuantity() < request.getOrder().getQuantity()) {
+            Distributor supplyingDistributor = findDistributorWithMostOfProduct(request.getOrder().getProductId());
+
+            if (supplyingDistributor == null) {
+                throw new IllegalArgumentException("Product is not in stock in any of the SUB Distributors");
+            }
+
+            // Transfer product from one distributor to another using their IDs
+            transferProductFromDistributorToDistributor(supplyingDistributor.getId(), distributor.getId(), request.getOrder().getProductId(), request.getOrder().getQuantity());
+        } else {
+            storedProductOpt.get().setQuantity(storedProductOpt.get().getQuantity() - request.getOrder().getQuantity());
         }
 
-        StoredProduct storedProduct = storedProductOpt.get();
-        if(storedProduct.getQuantity() < request.getOrder().getQuantity()){
-            throw new IllegalArgumentException("Product is not in stock");
-        }
+        // Save distributor
+        distributorService.save(distributor);
 
-        // Order
-        storedProduct.setQuantity(storedProduct.getQuantity() - request.getOrder().getQuantity());
-
-        if(customer.getOrders() == null){
+        // Add order to customer
+        if (customer.getOrders() == null) {
             customer.setOrders(new ArrayList<>());
         }
-        distributorRepository.save(distributor);
-
         Order order = new Order();
         order.setProductId(request.getOrder().getProductId());
         order.setQuantity(request.getOrder().getQuantity());
         customer.getOrders().add(order);
-        customerRepository.save(customer);
+        super.save(customer);
     }
+
+    public Distributor findDistributorWithMostOfProduct(String productId) {
+        List<Distributor> allDistributors = distributorRepository.findAll();
+        List<Distributor> subDistributors = allDistributors.stream()
+                .filter(d -> !d.getId().equals("0"))
+                .toList();
+        return subDistributors.stream()
+                .filter(d -> d.getProductsInStock().stream().anyMatch(p -> p.getProductId().equals(productId)))
+                .max(Comparator.comparingInt(d -> d.getProductsInStock().stream().filter(p -> p.getProductId().equals(productId)).findFirst().get().getQuantity()))
+                .orElse(null);
+    }
+
+    public void transferProductFromDistributorToDistributor(String sourceDistributorId, String targetDistributorId, String productId, int quantity) {
+        WarehouseService warehouseService = new WarehouseService(warehouseRepository, productRepository);
+        DistributorService transferService = new DistributorService(distributorRepository, productRepository, warehouseRepository, warehouseService);
+
+        TransferRequest transferRequest = new TransferRequest();
+        transferRequest.setSourceType(TransferType.SUB_DISTRIBUTOR);
+        transferRequest.setSourceId(sourceDistributorId);
+        transferRequest.setTargetType(TransferType.SUB_DISTRIBUTOR);
+        transferRequest.setTargetId(targetDistributorId);
+        transferRequest.setProductId(productId);
+        transferRequest.setQuantity(quantity);
+
+        transferService.transferProduct(transferRequest);
+    }
+
+
 }

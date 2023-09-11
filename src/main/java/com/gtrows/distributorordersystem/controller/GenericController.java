@@ -1,13 +1,15 @@
 package com.gtrows.DistributorOrderSystem.controller;
 
+import com.gtrows.DistributorOrderSystem.model.BaseEntity;
 import com.gtrows.DistributorOrderSystem.service.GenericService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-public abstract class GenericController<T> {
+public abstract class GenericController<T extends BaseEntity> {
 
     private final GenericService<T> service;
 
@@ -27,20 +29,24 @@ public abstract class GenericController<T> {
     }
 
     @PostMapping
-    public T create(@RequestBody T entity) {
-        return service.save(entity);
+    public ResponseEntity<T> create(@RequestBody T entity) {
+        T savedEntity = service.save(entity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedEntity);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<T> update(@PathVariable String id, @RequestBody T entity) {
         Optional<T> existingEntityOptional = service.getById(id);
         if (existingEntityOptional.isPresent()) {
+            T existingEntity = existingEntityOptional.get();
+            entity.setId(existingEntity.getId());
             T updatedEntity = service.save(entity);
             return ResponseEntity.ok(updatedEntity);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {

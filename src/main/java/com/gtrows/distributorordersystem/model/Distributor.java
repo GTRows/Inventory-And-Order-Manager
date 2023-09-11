@@ -1,80 +1,35 @@
 package com.gtrows.DistributorOrderSystem.model;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Document(collection = "distributors")
-public class Distributor {
+@Getter
+@Setter
+@NoArgsConstructor
+public class Distributor extends BaseEntity {
 
     public enum DistributorType {
         MAIN,
         SUB
     }
 
-    @Id
-    private String id;
+    private String distributorId;
+    private List<StoredProduct> productsInStock = new ArrayList<>();
 
-    private DistributorType distributorType;
-
-    private String connectedMainDistributorId;
-    private List<StoredProduct> productsInStock;
-
-    // Constructors
-    public Distributor() {
-    }
-
-
-    public Distributor(String id, DistributorType distributorType, String connectedMainDistributorId, String address, List<StoredProduct> productsInStock, boolean isActive) {
-        this.id = id;
-        this.distributorType = distributorType;
-        this.connectedMainDistributorId = connectedMainDistributorId;
-        this.productsInStock = productsInStock;
-    }
-
-    // Getters and Setters
-
-    public String getConnectedMainDistributorId() {
-        return connectedMainDistributorId;
-    }
-
-    public void setConnectedMainDistributorId(String connectedMainDistributorId) {
-        this.connectedMainDistributorId = connectedMainDistributorId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public DistributorType getDistributorType() {
-        return distributorType;
-    }
-
-    public void setDistributorType(DistributorType distributorType) {
-        this.distributorType = distributorType;
-    }
-
-
-    public List<StoredProduct> getProductsInStock() {
-        return productsInStock;
-    }
-
-    public void setProductsInStock(List<StoredProduct> productsInStock) {
-        this.productsInStock = productsInStock;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Distributor{" +
-                "id='" + id + '\'' +
-                ", distributorType=" + distributorType +
-                ", productsInStock=" + productsInStock +
-                '}';
+    public Distributor(DistributorType distributorType, List<StoredProduct> productsInStock) {
+        if (distributorType == DistributorType.MAIN) {
+            super.setId("0");
+        } else {
+            // random id
+            super.setId(UUID.randomUUID().toString());
+        }
+        this.productsInStock = (productsInStock == null) ? new ArrayList<>() : productsInStock;
     }
 }
