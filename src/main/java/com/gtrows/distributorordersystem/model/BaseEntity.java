@@ -1,16 +1,14 @@
 package com.gtrows.DistributorOrderSystem.model;
 
 import org.springframework.data.annotation.Id;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 public abstract class BaseEntity {
     @Id
-    public String id;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+    @Setter
+    private String id;
 }

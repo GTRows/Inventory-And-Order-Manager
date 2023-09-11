@@ -1,20 +1,20 @@
 package com.gtrows.DistributorOrderSystem.model;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "warehouses")
+@Getter
+@Setter
 public class Warehouse {
     private static Warehouse instance;
-    private List<StoredProduct> storedProducts;
+    private List<StoredProduct> storedProducts = new ArrayList<>();
 
-
-    // Constructors
     private Warehouse() {
-        this.storedProducts = new ArrayList<>();
     }
 
     public static Warehouse getInstance() {
@@ -22,15 +22,5 @@ public class Warehouse {
             instance = new Warehouse();
         }
         return instance;
-    }
-
-
-    // Getters and Setters
-    public List<StoredProduct> getStoredProducts() {
-        return storedProducts;
-    }
-
-    public void setStoredProducts(List<StoredProduct> storedProducts) {
-        this.storedProducts = (storedProducts == null) ? new ArrayList<>() : storedProducts;
     }
 }

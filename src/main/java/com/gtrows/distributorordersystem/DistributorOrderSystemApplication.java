@@ -25,16 +25,9 @@ public class DistributorOrderSystemApplication {
     public CommandLineRunner initDatabase(ProductRepository productRepository) {
         return args -> {
             if (productRepository.count() == 0) {
-                productRepository.save(new Product("P1", "Product 1", 10.0, 10));
-                productRepository.save(new Product("P2", "Product 2", 20.0, 20));
-                productRepository.save(new Product("P3", "Product 3", 30.0, 30));
-                productRepository.save(new Product("P4", "Product 4", 40.0, 40));
-                productRepository.save(new Product("P5", "Product 5", 50.0, 50));
-                productRepository.save(new Product("P6", "Product 6", 60.0, 60));
-                productRepository.save(new Product("P7", "Product 7", 70.0, 70));
-                productRepository.save(new Product("P8", "Product 8", 80.0, 80));
-                productRepository.save(new Product("P9", "Product 9", 90.0, 90));
-                productRepository.save(new Product("P10", "Product 10", 100.0, 100));
+                productRepository.save(new Product("P1", 10.0));
+                productRepository.save(new Product("P2", 20.0));
+                productRepository.save(new Product("P3", 30.0));
             }
         };
     }
