@@ -20,9 +20,9 @@ public class CustomerController extends GenericController<Customer> {
     private final CustomerService customerService;
 
     @Autowired
-    public CustomerController(CustomerService customerService, CustomerService customerService1) {
+    public CustomerController(CustomerService customerService) {
         super(customerService);
-        this.customerService = customerService1;
+        this.customerService = customerService;
     }
 
     @PostMapping("/orders")

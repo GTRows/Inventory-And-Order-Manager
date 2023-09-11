@@ -7,6 +7,7 @@ import com.gtrows.DistributorOrderSystem.repository.DistributorRepository;
 import com.gtrows.DistributorOrderSystem.repository.WarehouseRepository;
 import com.gtrows.DistributorOrderSystem.request.OrderRequest;
 import com.gtrows.DistributorOrderSystem.repository.ProductRepository;
+import com.gtrows.DistributorOrderSystem.request.TransferRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -99,7 +100,16 @@ public class CustomerService extends GenericService<Customer> {
     public void transferProductFromDistributorToDistributor(String sourceDistributorId, String targetDistributorId, String productId, int quantity) {
         WarehouseService warehouseService = new WarehouseService(warehouseRepository, productRepository);
         DistributorService transferService = new DistributorService(distributorRepository, productRepository, warehouseRepository, warehouseService);
-        transferService.transferProduct(TransferType.SUB_DISTRIBUTOR, sourceDistributorId, TransferType.SUB_DISTRIBUTOR, targetDistributorId, productId, quantity);
+
+        TransferRequest transferRequest = new TransferRequest();
+        transferRequest.setSourceType(TransferType.SUB_DISTRIBUTOR);
+        transferRequest.setSourceId(sourceDistributorId);
+        transferRequest.setTargetType(TransferType.SUB_DISTRIBUTOR);
+        transferRequest.setTargetId(targetDistributorId);
+        transferRequest.setProductId(productId);
+        transferRequest.setQuantity(quantity);
+
+        transferService.transferProduct(transferRequest);
     }
 
 

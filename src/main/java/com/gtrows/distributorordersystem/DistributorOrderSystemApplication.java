@@ -34,7 +34,7 @@ public class DistributorOrderSystemApplication {
             if (isDatabaseEmpty(productRepository, warehouseRepository, distributorRepository, customerRepository)) {
                 initProducts(productRepository);
                 initWarehouse(warehouseRepository);
-                initDistributors(distributorRepository);
+                initDistributors(distributorRepository, productRepository);
                 initCustomers(customerRepository);
             }
         };
@@ -50,11 +50,13 @@ public class DistributorOrderSystemApplication {
         warehouseRepository.save(Warehouse.getInstance());
     }
 
-    private void initDistributors(DistributorRepository distributorRepository) {
+    private void initDistributors(DistributorRepository distributorRepository, ProductRepository productRepository) {
         ArrayList<StoredProduct> storedProducts = new ArrayList<>();
-        storedProducts.add(new StoredProduct("P1", 10));
-        storedProducts.add(new StoredProduct("P2", 20));
-        storedProducts.add(new StoredProduct("P3", 30));
+        ArrayList<Product> products = (ArrayList<Product>) productRepository.findAll();
+        System.out.println("Yardiiiiiim" + products.get(0).getId());
+        storedProducts.add(new StoredProduct(products.get(0).getId(), 10));
+        storedProducts.add(new StoredProduct(products.get(1).getId(), 20));
+        storedProducts.add(new StoredProduct(products.get(2).getId(), 30));
 
         distributorRepository.save(new Distributor(Distributor.DistributorType.MAIN, null));
         distributorRepository.save(new Distributor(Distributor.DistributorType.SUB, storedProducts));
