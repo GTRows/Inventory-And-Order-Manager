@@ -31,14 +31,14 @@ public class TestConfig {
         initTestData();
     }
 
-    private void resetDatabase() {
+    public void resetDatabase() {
         productRepository.deleteAll();
         warehouseRepository.deleteAll();
         distributorRepository.deleteAll();
         customerRepository.deleteAll();
     }
 
-    private void initTestData() {
+    public void initTestData() {
         initProducts(productRepository);
         initWarehouse(warehouseRepository);
         initDistributors(distributorRepository);
@@ -60,18 +60,22 @@ public class TestConfig {
     }
 
     public void initWarehouse(WarehouseRepository warehouseRepository) {
-        warehouseRepository.save(Warehouse.getInstance());
+        Warehouse warehouse = Warehouse.getInstance();
+        warehouse.setStoredProducts(getProducts());
+        warehouseRepository.save(warehouse);
     }
 
-    public void initDistributors(DistributorRepository distributorRepository) {
+    private ArrayList<StoredProduct> getProducts() {
         ArrayList<StoredProduct> storedProducts = new ArrayList<>();
         ArrayList<Product> products = (ArrayList<Product>) productRepository.findAll();
         storedProducts.add(new StoredProduct(products.get(0).getId(), 10));
         storedProducts.add(new StoredProduct(products.get(1).getId(), 20));
         storedProducts.add(new StoredProduct(products.get(2).getId(), 30));
+        return storedProducts;
+    }
 
-        Warehouse.getInstance().setStoredProducts(storedProducts);
-        warehouseRepository.save(Warehouse.getInstance());
+    public void initDistributors(DistributorRepository distributorRepository) {
+        ArrayList<StoredProduct> storedProducts = getProducts();
 
         distributorRepository.save(new Distributor(Distributor.DistributorType.MAIN, storedProducts));
 

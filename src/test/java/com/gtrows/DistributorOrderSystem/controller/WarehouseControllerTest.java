@@ -5,11 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gtrows.DistributorOrderSystem.TestConfig;
 import com.gtrows.DistributorOrderSystem.model.*;
-import com.gtrows.DistributorOrderSystem.repository.CustomerRepository;
-import com.gtrows.DistributorOrderSystem.repository.DistributorRepository;
-import com.gtrows.DistributorOrderSystem.repository.ProductRepository;
-import com.gtrows.DistributorOrderSystem.repository.WarehouseRepository;
-import com.gtrows.DistributorOrderSystem.service.DistributorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -37,20 +32,12 @@ public class WarehouseControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private DistributorRepository distributorRepository;
-
-    @Autowired
     private TestConfig testConfig;
-
-    @Autowired
-    private WarehouseRepository warehouseRepository;
 
     @BeforeEach
     public void setUp() {
-        warehouseRepository.deleteAll();
-        distributorRepository.deleteAll();
-        testConfig.initWarehouse(warehouseRepository);
-        testConfig.initDistributors(distributorRepository);
+        testConfig.resetDatabase();
+        testConfig.initTestData();
     }
 
 
@@ -88,8 +75,8 @@ public class WarehouseControllerTest {
 
     @Test
     public void testUpdateStockInWarehouse() throws Exception {
-        Integer newQuantity = 20;
-        mockMvc.perform(put("/api/warehouses/products/1")
+        Integer newQuantity = 40;
+        mockMvc.perform(put("/api/warehouses/products/3")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newQuantity)))
                 .andExpect(status().isOk());

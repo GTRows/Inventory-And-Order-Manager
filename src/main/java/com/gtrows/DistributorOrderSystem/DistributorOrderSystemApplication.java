@@ -1,10 +1,7 @@
 package com.gtrows.DistributorOrderSystem;
 
 import com.gtrows.DistributorOrderSystem.model.*;
-import com.gtrows.DistributorOrderSystem.repository.CustomerRepository;
-import com.gtrows.DistributorOrderSystem.repository.DistributorRepository;
-import com.gtrows.DistributorOrderSystem.repository.ProductRepository;
-import com.gtrows.DistributorOrderSystem.repository.WarehouseRepository;
+import com.gtrows.DistributorOrderSystem.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -53,7 +50,6 @@ public class DistributorOrderSystemApplication {
     private void initDistributors(DistributorRepository distributorRepository, ProductRepository productRepository) {
         ArrayList<StoredProduct> storedProducts = new ArrayList<>();
         ArrayList<Product> products = (ArrayList<Product>) productRepository.findAll();
-        System.out.println("Yardiiiiiim" + products.get(0).getId());
         storedProducts.add(new StoredProduct(products.get(0).getId(), 10));
         storedProducts.add(new StoredProduct(products.get(1).getId(), 20));
         storedProducts.add(new StoredProduct(products.get(2).getId(), 30));
