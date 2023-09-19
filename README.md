@@ -20,10 +20,19 @@ This project represents a distributor order system that manages products, stock,
    - Docker
    - MongoDB instance (if not using Docker)
 
+
 2. **Building the Project**:
 
+   First, ensure you clean the project:
+
    ```bash
-   docker build -t distributorordersystem:latest .
+   ./gradlew clean
+   ```
+
+   Then, you can build the Docker image:
+
+   ```bash
+   docker build -t gtrows/distributorordersystem:latest .
    ```
 
 3. **Running the Project**:
@@ -31,7 +40,7 @@ This project represents a distributor order system that manages products, stock,
    If you're using Docker, you can simply run:
 
    ```bash
-   docker run -p 8080:8080 distributorordersystem:latest
+   docker-compose up
    ```
 
    This will start the service on port 8080. You can access the Swagger UI at `http://localhost:8080/swagger-ui.html/` to interact with the API.
@@ -39,13 +48,3 @@ This project represents a distributor order system that manages products, stock,
 4. **Database Connection**:
 
    The project uses MongoDB. By default, it tries to connect to a MongoDB instance at `localhost:27017`. You can change the connection settings in `src/main/resources/application.properties`.
-
-5. **API Documentation**:
-
-   Once the application is running, you can view the API documentation and test the endpoints via Swagger UI at `http://localhost:8080/swagger-ui.html`.
-
-6. **Postman Collection**:
-
-   A Postman collection is provided in the repository for testing the various endpoints.
-
-## Unit Tests (Upcoming)
